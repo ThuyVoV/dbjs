@@ -1,7 +1,7 @@
 // require the discord.js module
 const Discord = require('discord.js');
 
-const { prefix, secret_passcodes, token } = require('./config.json');
+const { prefix, token } = require('./config.json');
 
 // create a new Discord client
 const client = new Discord.Client();
@@ -22,7 +22,7 @@ client.on('message', message => {
 
 
 	if (message.content.startsWith(`${prefix}ping`)) {
-		message.channel.send("Ping! " + secret_passcodes.bank);
+		message.channel.send("Ping!");
 	}
 	else if (message.content.startsWith(`${prefix}beep`)) {
 		message.channel.send("Boop.");
@@ -62,15 +62,19 @@ client.on('message', message => {
 		message.channel.send(avatarList);
 	}
 	else if (command === "prune") {
-		const amount = parseInt(args[0]);
+		const amount = parseInt(args[0]) + 1;
 		if (isNaN(amount)) {
 			return message.reply("that isn't a valid number");
 		}
-		else if (amount < 2 || amount > 100) {
-			return message.reply("need to input a number between 2 and 100");
+		else if (amount <= 1 || amount > 100) {
+			return message.reply("need to input a number between 1 and 99");
 		}
 
-		message.channel.bulkDelete(amount);
+		// throws error if trying to delete msg older than 2 weeks
+		message.channel.bulkDelete(amount, true).catch(err => {
+			console.error(err);
+			message.channel.send("error trying to prune msgs in this channel");
+		});
 	}
 });
 
