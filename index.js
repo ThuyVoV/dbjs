@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 // require the discord.js module
 const Discord = require('discord.js');
 
@@ -5,6 +7,15 @@ const { prefix, token } = require('./config.json');
 
 // create a new Discord client
 const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+
+	client.commands.set(command.name, command);
+}
 
 // when the client is ready, run this code
 // this event will only trigger one time after logging in
@@ -20,16 +31,28 @@ client.on('message', message => {
 	// return first element in array and remove it from array
 	const command = args.shift().toLowerCase();
 
+	if (!client.commands.has(command)) return;
 
+	try {
+		client.commands.get(command).execute(message, args);
+	}
+	catch (error) {
+		console.error(error);
+		message.reply("error trying to exceute that command");
+	}
+/*
 	if (message.content.startsWith(`${prefix}ping`)) {
-		message.channel.send("Ping!");
+		// message.channel.send("Ping!");
+		client.commands.get("ping").execute(message, args);
 	}
 	else if (message.content.startsWith(`${prefix}beep`)) {
 		message.channel.send("Boop.");
 	}
 	else if (message.content === `${prefix}server`) {
-		message.channel.send(`The server name is: ${message.guild.name}` +
+		 message.channel.send(`The server name is: ${message.guild.name}` +
 		` with ${message.guild.memberCount} members`);
+
+		client.commands.get("server").execute(message, args);
 	}
 	else if (message.content === `${prefix}user-info`) {
 		message.channel.send(`Your username: ${message.author.username} and ID: ${message.author.id}`);
@@ -76,6 +99,7 @@ client.on('message', message => {
 			message.channel.send("error trying to prune msgs in this channel");
 		});
 	}
+	*/
 });
 
 client.on('message', message => {
