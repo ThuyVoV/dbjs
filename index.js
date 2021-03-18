@@ -2,20 +2,32 @@ const fs = require('fs');
 
 // require the discord.js module
 const Discord = require('discord.js');
-
 const { prefix, token } = require('./config.json');
 
 // create a new Discord client
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
-const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+// returns an array of subfolders
+const commandFolders = fs.readdirSync("./commands");
 
+// const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+
+for (const folder of commandFolders) {
+	const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith(".js"));
+	for (const file of commandFiles) {
+		const command = require(`./commands/${folder}/${file}`);
+		client.commands.set(command.name, command);
+	}
+}
+
+/*
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 
 	client.commands.set(command.name, command);
 }
+*/
 
 // when the client is ready, run this code
 // this event will only trigger one time after logging in
@@ -53,3 +65,5 @@ client.on('message', message => {
 
 // login to Discord with your app's token
 client.login(token);
+
+// WFMZV92
