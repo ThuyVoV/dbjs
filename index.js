@@ -21,14 +21,6 @@ for (const folder of commandFolders) {
 	}
 }
 
-/*
-for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-
-	client.commands.set(command.name, command);
-}
-*/
-
 // when the client is ready, run this code
 // this event will only trigger one time after logging in
 client.once('ready', () => {
@@ -48,6 +40,22 @@ client.on('message', message => {
 	if (!client.commands.has(commandName)) return;
 
 	const command = client.commands.get(commandName);
+
+	// cmd cant be used in DM check
+	if (command.guildOnly && message.channel.type === "dm") {
+		return message.reply("Can't use this cmd in DM");
+	}
+
+	// if command has "args: true" in the file it WILL check for arguments here
+	// sends the "usage" message as well, providing addition info on command
+	if (command.args && !args.length) {
+		let reply = `You didnt provide argument ${message.author}!`;
+
+		if (command.usage) {
+			reply += `\nThe proper usage would be:\n\`${prefix}${command.name} ${command.usage}\``;
+		}
+		return message.channel.send(reply);
+	}
 
 	try {
 		// try to execute command
