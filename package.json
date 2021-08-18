@@ -9,7 +9,18 @@
   "author": "Thuy Vo",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.5.1",
-    "eslint": "^7.21.0"
+    "discord.js": "^12.5.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThuyVoV/dbjs.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/ThuyVoV/dbjs/issues"
+  },
+  "homepage": "https://github.com/ThuyVoV/dbjs#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0"
   }
 }
